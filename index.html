@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="פניות">
+<title>פניות Jowise</title>
+<style>
+[hidden]{display:none!important}
+body{margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* One business fills the phone screen, one thumb-sized action, then the next. */
+:root{--bg:#eff3f1;--card:#fff;--ink:#14201b;--soft:#586660;--line:#d9e1dd;--green:#0f7f43;--green-ink:#fff;--tint:#dff3e7;--red:#b3261e;--red-ink:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1513;--card:#1a2320;--ink:#eef3f0;--soft:#a2afa9;--line:#2c3733;--green:#27b56a;--green-ink:#06130c;--tint:#17352a;--red:#f2877f;--red-ink:#2b0806;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1513;--card:#1a2320;--ink:#eef3f0;--soft:#a2afa9;--line:#2c3733;--green:#27b56a;--green-ink:#06130c;--tint:#17352a;--red:#f2877f;--red-ink:#2b0806;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button,input,select{font:inherit;color:inherit}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,label:focus-within{outline:2px solid var(--green);outline-offset:2px}
+#app{min-height:100%}
+.gutter{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#setup{max-width:520px;margin:auto;padding-block:44px 28px;display:flex;flex-direction:column;gap:14px}
+#setup h1{margin:0;font-size:29px;line-height:1.15;text-wrap:balance}
+#setup p{margin:0;color:var(--soft);font-size:17px;line-height:1.45}
+.pick{display:flex;align-items:center;justify-content:center;min-height:62px;border-radius:13px;background:var(--green);color:var(--green-ink);font-size:19px;font-weight:700;cursor:pointer;text-align:center;padding:8px 14px}
+.pick input{position:absolute;opacity:0;width:1px;height:1px}
+#setupError{color:var(--red);font-weight:600}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px 8px;border-bottom:1px solid var(--line)}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+header h1{margin:0;font-size:21px}
+#progress{color:var(--soft);font-size:14px;font-variant-numeric:tabular-nums}
+.bar{height:5px;border-radius:3px;background:var(--line);margin:7px 0 9px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--green)}
+#q{display:block;width:100%;height:42px;margin-top:8px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:0 12px;font-size:16px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-top:8px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none;height:36px;padding:0 12px;border:1px solid var(--line);border-radius:18px;background:var(--card);font-size:14px;font-weight:600}
+.tabs button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.tabs small{font-weight:400;opacity:.75;margin-inline-start:3px}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2px;padding:2px;background:var(--line);border-radius:9px}
+.seg button{height:32px;border:0;border-radius:7px;background:transparent;font-size:14px}
+.seg button[aria-pressed=true]{background:var(--card);font-weight:700}
+#views{margin-top:8px}
+main{max-width:560px;margin:auto;padding-block:10px 28px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px;margin-bottom:9px}
+.head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.head>div{min-width:0}
+.name{font-size:17px;font-weight:700;overflow-wrap:anywhere}
+.sub{color:var(--soft);font-size:14px;margin-top:1px;overflow-wrap:anywhere}
+.city{flex:none;max-width:40%;color:var(--soft);font-size:13px;background:var(--bg);border-radius:6px;padding:2px 7px}
+.send{display:flex;align-items:center;justify-content:center;height:48px;margin-top:10px;border-radius:10px;background:var(--green);color:var(--green-ink);font-size:17px;font-weight:700;text-decoration:none}
+.state{display:block;width:100%;height:38px;margin-top:7px;border:1px solid var(--line);border-radius:9px;background:var(--card);padding:0 9px;font-size:16px}
+.card.done .send{background:var(--tint);color:var(--ink)}
+.card.stop .send{display:none}
+.card.stop .state{color:var(--red);border-color:var(--red)}
+#empty,#fDone{text-align:center;color:var(--soft);padding:44px 12px;font-size:17px}
+#sentinel{height:1px}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 16px}
+#fCount{color:var(--soft);font-size:14px;margin-bottom:12px;font-variant-numeric:tabular-nums}
+#fName{font-size:27px;font-weight:800;line-height:1.2;overflow-wrap:anywhere}
+#fSub{font-size:17px;color:var(--soft);margin-top:5px;overflow-wrap:anywhere}
+#fCity{display:inline-block;margin-top:10px;font-size:14px;color:var(--soft);background:var(--bg);border-radius:6px;padding:3px 9px}
+#fCity:empty{display:none}
+.send.big{height:66px;margin-top:22px;border-radius:13px;font-size:21px}
+#fSkip{display:block;width:100%;height:46px;margin-top:10px;border:1px solid var(--line);border-radius:11px;background:transparent;font-weight:600}
+#undo{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--tint);border-radius:10px;padding:7px 12px;margin-bottom:10px;font-size:14px}
+#undoText{min-width:0;overflow-wrap:anywhere}
+#undoBtn{flex:none;border:0;background:none;color:var(--green);font-weight:800;padding:6px 4px}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-top:18px;color:var(--soft);font-size:13px}
+.foot label{text-decoration:underline;cursor:pointer}
+.foot input{position:absolute;opacity:0;width:1px;height:1px}
+#toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));z-index:20;background:var(--red);color:var(--red-ink);border-radius:10px;padding:10px 12px;text-align:center}
+#app.fast #q,#app.fast #views,#app.fast #list,#app.fast #empty,#app.fast #sentinel{display:none}
+#app:not(.fast) #fast{display:none}
+</style>
+</head>
+<body>
+<div id="app" class="fast" dir="rtl" lang="he">
+  <section id="setup" class="gutter" hidden>
+    <h1>טעינת רשימת העסקים</h1>
+    <p>בוחרים פעם אחת את הקובץ <b>אנשי-קשר-לטלפון</b> מאפליקציית קבצים. הרשימה נשמרת רק בטלפון הזה.</p>
+    <label class="pick">בחירת הקובץ<input id="file" type="file" accept=".json,application/json,text/plain"></label>
+    <div id="setupError" role="alert" hidden></div>
+  </section>
+  <div id="work" hidden>
+    <header class="gutter">
+      <div class="top"><h1>פניות לעסקים</h1><span id="progress"></span></div>
+      <div class="bar"><i id="fill"></i></div>
+      <div class="seg" id="modes">
+        <button data-m="fast" aria-pressed="true">אחד אחד</button>
+        <button data-m="list" aria-pressed="false">רשימה</button>
+      </div>
+      <input id="q" type="search" placeholder="חיפוש לפי שם, עסק או עיר" autocomplete="off" aria-label="חיפוש">
+      <div class="tabs" id="tabs"></div>
+      <div class="seg" id="views">
+        <button data-v="todo" aria-pressed="true">לשליחה</button>
+        <button data-v="done" aria-pressed="false">טופלו</button>
+        <button data-v="all" aria-pressed="false">הכול</button>
+      </div>
+    </header>
+    <main class="gutter">
+      <section id="fast">
+        <div id="undo" hidden><span id="undoText"></span><button id="undoBtn">ביטול</button></div>
+        <article class="hero" id="hero">
+          <div id="fCount"></div>
+          <div id="fName"></div>
+          <div id="fSub"></div>
+          <div id="fCity"></div>
+          <a class="send big" id="fSend" rel="noreferrer">שליחה בוואטסאפ</a>
+          <button id="fSkip">דלג לבא</button>
+        </article>
+        <div id="fDone" hidden>סיימת את כל הפניות בקטגוריה הזו</div>
+      </section>
+      <div id="list"></div>
+      <div id="empty" hidden></div>
+      <div id="sentinel"></div>
+      <div class="foot"><span id="saveNote"></span><label>החלפת קובץ<input id="file2" type="file" accept=".json,application/json,text/plain"></label></div>
+    </main>
+  </div>
+  <div id="toast" role="alert" hidden></div>
+</div>
+<script>
+const NEW = 'לא פנינו';
+const STATUSES = [NEW, 'נשלח', 'ענה', 'נרשם', 'פרסם משרה', 'לא מעוניין', 'ביקש לא לפנות'];
+const STOP = new Set(['לא מעוניין', 'ביקש לא לפנות']);
+const CATS = ['מסעדות', 'ברים', 'אולמות', 'מלונות', 'אחר'];
+const PAGE = 30, LS = 'jowise-progress-v1';
+const $ = id => document.getElementById(id);
+const state = {cat: CATS[0], view: 'todo', q: ''};
+const skipped = new Set();
+let leads = [], shown = [], drawn = 0, mode = 'fast', cur = null, busy = false;
+let statuses = {}, changes = {};
+
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => { t.hidden = true; }, 3500);
+}
+function readLocal() {
+  try {
+    const d = JSON.parse(localStorage.getItem(LS) || '{}');
+    statuses = d.statuses || {};
+    changes = d.changes || {};
+  } catch (_) {}
+}
+function writeLocal() {
+  try { localStorage.setItem(LS, JSON.stringify({statuses, changes})); } catch (_) {}
+}
+function openStore() {
+  return new Promise((ok, no) => {
+    const r = indexedDB.open('jowise-phone', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('files');
+    r.onsuccess = () => ok(r.result);
+    r.onerror = () => no(r.error);
+  });
+}
+async function storeGet(key) {
+  const d = await openStore();
+  return new Promise((ok, no) => {
+    const r = d.transaction('files').objectStore('files').get(key);
+    r.onsuccess = () => ok(r.result);
+    r.onerror = () => no(r.error);
+  });
+}
+async function storePut(key, value) {
+  const d = await openStore();
+  return new Promise((ok, no) => {
+    const t = d.transaction('files', 'readwrite');
+    t.objectStore('files').put(value, key);
+    t.oncomplete = () => ok();
+    t.onerror = () => no(t.error);
+  });
+}
+function parseLeads(text) {
+  const d = JSON.parse(text);
+  if (!d || d.kind !== 'jowise-leads' || !Array.isArray(d.leads) || !d.leads.length) throw new Error('kind');
+  return d.leads.map(x => {
+    if (!/^L\d{4,}$/.test(x.k) || !/^972\d{9}$/.test(x.p) || !CATS.includes(x.c) || typeof x.m !== 'string') throw new Error('row');
+    const text = encodeURIComponent(x.m).replace(/'/g, '%27');
+    return {id: x.k, cat: x.c, name: String(x.n || 'ללא שם'), sub: String(x.s || ''), city: String(x.y || ''),
+      url: 'https://wa.me/' + x.p + '?text=' + text, status: NEW};
+  });
+}
+function applyStatuses() { leads.forEach(l => { l.status = statuses[l.id] || NEW; }); }
+function begin(text) {
+  leads = parseLeads(text);
+  applyStatuses();
+  $('setup').hidden = true;
+  $('work').hidden = false;
+  render();
+}
+async function takeFile(input) {
+  const f = input.files && input.files[0];
+  input.value = '';
+  if (!f) return;
+  try {
+    const text = await f.text();
+    begin(text);
+    try { await storePut('leads', text); }
+    catch (_) { toast('הרשימה לא נשמרה בטלפון, ויהיה צריך לבחור את הקובץ שוב בפתיחה הבאה'); }
+  } catch (_) {
+    const msg = 'זה לא הקובץ הנכון. צריך לבחור את הקובץ אנשי-קשר-לטלפון';
+    if ($('work').hidden) { $('setupError').textContent = msg; $('setupError').hidden = false; }
+    else toast(msg);
+  }
+}
+function matches(l) {
+  if (l.cat !== state.cat) return false;
+  if (state.view === 'todo' && l.status !== NEW) return false;
+  if (state.view === 'done' && l.status === NEW) return false;
+  if (!state.q) return true;
+  return (l.name + ' ' + l.sub + ' ' + l.city).toLowerCase().includes(state.q);
+}
+function nextLead() {
+  const pool = leads.filter(l => l.cat === state.cat && l.status === NEW);
+  let l = pool.find(x => !skipped.has(x.id));
+  if (!l && pool.length) { skipped.clear(); l = pool[0]; }
+  return l || null;
+}
+function showFast(l) {
+  cur = l || nextLead();
+  $('hero').hidden = !cur;
+  $('fDone').hidden = !!cur;
+  if (!cur) return;
+  const left = leads.filter(x => x.cat === state.cat && x.status === NEW).length;
+  $('fCount').textContent = 'נשארו ' + left.toLocaleString('he') + ' ב' + state.cat;
+  $('fName').textContent = cur.name;
+  $('fSub').textContent = cur.sub;
+  $('fCity').textContent = cur.city;
+  $('fSend').href = cur.url;
+}
+function paint(card, l) {
+  card.classList.toggle('done', l.status !== NEW && !STOP.has(l.status));
+  card.classList.toggle('stop', STOP.has(l.status));
+  card.querySelector('.state').value = l.status;
+  card.querySelector('.send').textContent = l.status === NEW ? 'שליחה בוואטסאפ' : 'פתיחת השיחה';
+}
+function card(l) {
+  const c = el('article', 'card');
+  c.dataset.id = l.id;
+  const head = el('div', 'head');
+  const who = el('div');
+  who.append(el('div', 'name', l.name));
+  if (l.sub) who.append(el('div', 'sub', l.sub));
+  head.append(who);
+  if (l.city) head.append(el('span', 'city', l.city));
+  const a = el('a', 'send');
+  a.href = l.url;
+  a.rel = 'noreferrer';
+  a.addEventListener('click', () => { if (l.status === NEW) setTimeout(() => save(l, 'נשלח'), 400); });
+  const s = el('select', 'state');
+  s.setAttribute('aria-label', 'סטטוס של ' + l.name);
+  STATUSES.forEach(v => s.append(new Option(v, v)));
+  s.addEventListener('change', () => save(l, s.value));
+  c.append(head, a, s);
+  paint(c, l);
+  return c;
+}
+function more() {
+  const part = shown.slice(drawn, drawn + PAGE);
+  const f = document.createDocumentFragment();
+  part.forEach(l => f.append(card(l)));
+  $('list').append(f);
+  drawn += part.length;
+}
+function emptyText() {
+  return state.q ? 'לא נמצאו תוצאות' : state.view === 'todo' ? 'סיימת את כל הפניות בקטגוריה הזו' : 'אין כאן עדיין פניות';
+}
+function counts() {
+  const sent = leads.filter(l => l.status !== NEW).length;
+  $('progress').textContent = 'טופלו ' + sent.toLocaleString('he') + ' מתוך ' + leads.length.toLocaleString('he');
+  $('fill').style.width = (leads.length ? 100 * sent / leads.length : 0) + '%';
+  document.querySelectorAll('#tabs button').forEach(b => {
+    const n = leads.filter(l => l.cat === b.dataset.c && l.status === NEW).length;
+    b.lastChild.textContent = n.toLocaleString('he');
+  });
+}
+function render() {
+  if (mode === 'fast') { showFast(); counts(); return; }
+  shown = leads.filter(matches);
+  drawn = 0;
+  $('list').replaceChildren();
+  more();
+  $('empty').hidden = shown.length > 0;
+  $('empty').textContent = emptyText();
+  counts();
+}
+function save(l, value) {
+  l.status = value;
+  if (value === NEW) delete statuses[l.id]; else statuses[l.id] = value;
+  changes[l.id] = value;
+  writeLocal();
+  if (mode === 'list') {
+    document.querySelectorAll('.card').forEach(c => {
+      if (c.dataset.id !== l.id) return;
+      if (matches(l)) paint(c, l);
+      else { c.remove(); shown = shown.filter(x => x.id !== l.id); drawn = $('list').children.length; }
+    });
+    if ($('list').children.length < 6 && drawn < shown.length) more();
+    $('empty').hidden = shown.length > 0;
+    $('empty').textContent = emptyText();
+  }
+  counts();
+  flush();
+}
+function flush() {
+  changes = {};
+  writeLocal();
+}
+async function connect() {
+  $('saveNote').textContent = 'ההתקדמות נשמרת בטלפון הזה';
+  try {
+    if (navigator.storage && navigator.storage.persist) await navigator.storage.persist();
+  } catch (_) {}
+}
+CATS.forEach((c, i) => {
+  const b = el('button', '', c + ' ');
+  b.dataset.c = c;
+  b.setAttribute('aria-pressed', i === 0);
+  b.append(el('small', '', '0'));
+  b.addEventListener('click', () => {
+    state.cat = c;
+    $('undo').hidden = true;
+    $('tabs').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    render();
+    scrollTo(0, 0);
+  });
+  $('tabs').append(b);
+});
+$('fSend').addEventListener('click', e => {
+  if (busy || !cur) { e.preventDefault(); return; }
+  busy = true;
+  const l = cur;
+  save(l, 'נשלח');
+  setTimeout(() => {
+    showFast();
+    $('undoText').textContent = 'סומן כנשלח: ' + l.name;
+    $('undoBtn').onclick = () => {
+      $('undo').hidden = true;
+      skipped.delete(l.id);
+      save(l, NEW);
+      showFast(l);
+    };
+    $('undo').hidden = false;
+    busy = false;
+  }, 400);
+});
+$('fSkip').addEventListener('click', () => {
+  if (!cur) return;
+  skipped.add(cur.id);
+  $('undo').hidden = true;
+  showFast();
+});
+$('modes').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  mode = b.dataset.m;
+  $('app').classList.toggle('fast', mode === 'fast');
+  $('modes').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  render();
+  scrollTo(0, 0);
+});
+$('views').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  state.view = b.dataset.v;
+  $('views').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  render();
+  scrollTo(0, 0);
+});
+$('q').addEventListener('input', e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+$('file').addEventListener('change', e => takeFile(e.target));
+$('file2').addEventListener('change', e => takeFile(e.target));
+new IntersectionObserver(es => {
+  if (mode === 'list' && es[0].isIntersecting && drawn < shown.length) more();
+}, {rootMargin: '500px'}).observe($('sentinel'));
+(async () => {
+  readLocal();
+  connect().catch(() => {});
+  let saved = null;
+  try {
+    saved = await Promise.race([storeGet('leads'), new Promise(ok => setTimeout(() => ok(null), 2500))]);
+  } catch (_) {}
+  if (leads.length) return;
+  if (saved) {
+    try { begin(saved); } catch (_) { saved = null; }
+  }
+  if (!saved) $('setup').hidden = false;
+})();
+</script>
+</body>
+</html>
